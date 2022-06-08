@@ -1,18 +1,35 @@
 import styled from "styled-components";
 import Helmet from "react-helmet";
+import Login from "./login/Login";
 
 const Home = () => {
-  console.log("Home render");
   return (
     <Wrapper>
-      <Helmet bodyAttributes={{ style: "background-color : #EDE3F9" }} />
-      <Title>Welcome to - H a v e n</Title>
+      <Helmet bodyAttributes={{ style: "background-color : #F3EDFC" }} />
+
+      <Title>
+        {/* Place holder for now, need to not hard coded */}
+        <GrowthHavenIcon src="https://cdn-icons-png.flaticon.com/512/100/100662.png" />
+        Growth Haven
+      </Title>
+
       <Description>
-        Simple and accessible programs that adapt to your daily life, whatever
-        your level, your pace and your desires. Stress less. Sleep more. Take
-        your daily dose of happiness with Haven. Access hundreds of meditations,
-        focus exercises and more by starting your free trial today.
+        Discover Your True Potential, Release Your Fears & Make Your Dream Life
+        a Reality <br></br>Whether it's discovering your purpose, doing what you
+        love, making a positive impact, or simply creating a beautiful, fun and
+        fulfilling life—you can totally do it. You are the artist of your life.
+        You have the power to create your dream life.
       </Description>
+      <VisionBorad>Place Holder for a Vision board</VisionBorad>
+      <SubDescription>
+        <ul>
+          <li>
+            Get intentional with your daily pratices with your personal journal
+          </li>
+          <li>Track your physical wellness in your calender.</li>
+          <li>Access to daily affirmations exercises</li>
+        </ul>
+      </SubDescription>
     </Wrapper>
   );
 };
@@ -25,21 +42,52 @@ const Wrapper = styled.div`
   }
 `;
 const Title = styled.h1`
-  font-weight: bold;
-  font-size: 50px;
+  font-weight: 400;
+  font-size: 90px;
   display: flex;
   font-family: "Roboto", sans-serif;
   font-style: italic;
   justify-content: center;
+  display: flex;
+  align-self: center;
+  align-items: center;
+  margin-top: 50px;
+
+  img {
+    margin-right: 10px;
+  }
 `;
 
 const Description = styled.div`
-  font-size: 20px;
+  font-size: 30px;
   display: flex;
   font-family: "Poppins", sans-serif;
-  font-weight: 100;
+  font-style: italic;
+  text-align: center;
+  margin: 100px 300px;
+`;
+const SubDescription = styled.div`
+  font-size: 30px;
+  display: flex;
+  font-family: "Poppins", sans-serif;
   justify-content: center;
-  margin: 50px;
-  background-color: white;
-  padding: 20px;
-  `;
+  margin: 10px;
+  ul {
+    background-color: #f9eedf;
+    padding: 60px;
+  }
+`;
+
+const GrowthHavenIcon = styled.img`
+  width: 80px;
+`;
+const VisionBorad = styled.div`
+  background-color: #E5E2E7 ;
+  color: white;
+  padding: 250px;
+  margin: 60px 300px;
+  font-family: "Tiro Gurmukhi", serif;
+  font-size: 50px;
+  text-align: center;
+  border-radius: 30px;
+`;
