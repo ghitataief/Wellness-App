@@ -4,6 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import MindJournal from "./MindJournal";
 import Helmet from "react-helmet";
 import ReactQuill from "react-quill";
+import moment from "moment";
 
 const Mind = () => {
   //Set the status of journaling
@@ -17,7 +18,13 @@ const Mind = () => {
   //Display blog
   const [isShown, setIsShown] = useState(false);
 
-  //Posting the Tweet
+  //set date 
+  const date = new Date();
+  console.log('new moment',moment(date).format('MM/YYYY : DD dddd'))
+
+  const monthDate = moment(date).format('MM/YYYY');
+  const weeklyDate = moment(date).format('DD dddd');
+
   const postingJournal = (e) => {
     e.preventDefault();
     fetch("/add-journal", {
@@ -28,18 +35,16 @@ const Mind = () => {
       body: JSON.stringify({
         status: 201,
         message: value,
+        month: monthDate,
+        week: weeklyDate,
       }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        //console.log("journal", data.message);
-        //setReload(!reload);
-      })
+      .then((data) => console.log(data))
       .catch((error) => {
         setErrorUser("error:", error);
       })
       .finally(() => {
-        //setValue("");
         setJournalingStatus(true);
       });
   };
@@ -48,6 +53,7 @@ const Mind = () => {
     <Wrapper>
       <Helmet bodyAttributes={{ style: "background-color : #F2FFDA  " }} />
       <Title>Mindfull Practice</Title>
+      <hr/>
       <Description>
         Journal prompts for self discovery, healing & growth
         <br />
@@ -56,23 +62,22 @@ const Mind = () => {
             Give yourself daily goals and design your life accordingly.
             <br />
           </li>
-          <li>
-            <li>
-              Start the week with your priorities and positive habits in mind
-            </li>
-            <li>
-              Reset with a comprehensive reflection to feel refreshed for the
-              week ahead.
-            </li>
-            <li>
-              It's your tool to live a more intentional life, one week at a
-              time.
-            </li>
 
-            <br />
+          <li>
+            Start the week with your priorities and positive habits in mind
           </li>
+          <li>
+            Reset with a comprehensive reflection to feel refreshed for the week
+            ahead.
+          </li>
+          <li>
+            It's your tool to live a more intentional life, one week at a time.
+          </li>
+          <br />
+          
         </ul>
       </Description>
+      <hr/>
       <NotePad>
         <ReactQuill
           theme="snow"
@@ -81,10 +86,12 @@ const Mind = () => {
           placeholder="What are 3 goals that I can accomplish today ?"
           className="Notes"
           style={{
-            height: "30vh",
+            height: "40vh",
             backgroundColor: "white",
             borderColor: "black",
-            borderWidth: "30px",
+            borderStyle: "solid",
+            borderWidth: "5px",
+            fontSize:"50px"
           }}
         />
       </NotePad>
@@ -92,7 +99,7 @@ const Mind = () => {
       {/* Render the journal prompt if post has been clicked*/}
       {journalingStatus && (
         <StyleMindJournal>
-          <MindJournal value={value} />
+          <MindJournal value={value} key={value}/>
         </StyleMindJournal>
       )}
     </Wrapper>
@@ -103,7 +110,22 @@ export default Mind;
 
 const Wrapper = styled.div`
   margin: 100px;
-`;
+
+.ql-container{
+  font-size: 30px;
+  border-style: none;
+}
+hr {
+  height: 2vh;
+  width: 70vw;
+  border-style: solid;
+  background-color: #E0E8CD ;
+  border-color:#E0E8CD ;
+  margin-bottom: 70px;
+}
+`
+
+;
 
 const Title = styled.h1`
   font-weight: bold;

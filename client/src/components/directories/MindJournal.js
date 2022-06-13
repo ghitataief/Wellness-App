@@ -7,26 +7,8 @@ import { Link } from "react-router-dom";
 
 const Mind = ({ value }) => {
 
-  // const [blog, setBlog] = useState([]); 
-  // const [post, setPost] = useState([]); 
-
   const date = new Date();
 
-  // fetch ("api/get-journal",{
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   }
-  // })
-  // .then((res) => res.json())
-  // .then((data) => {
-  //   setBlog(data.data)
-  //   console.log("Get journal", blog);
-  // })
-
-  // blog.map((post) => {
-  //   setPost(post.message)
-  // })
-  
 
   return (
     <Wrapper>
@@ -37,7 +19,7 @@ const Mind = ({ value }) => {
         </Moment>
       </StyleLink>
       <br />
-      <div dangerouslySetInnerHTML={{ __html: value }} />
+      <div dangerouslySetInnerHTML={{ __html: value }} className="JournalValue" />
     </Wrapper>
   );
 };
@@ -45,21 +27,26 @@ const Mind = ({ value }) => {
 export default Mind;
 
 const Wrapper = styled.div`
-  border-width: 3px;
-  border-radius: 10px;
+  border-width: 5px;
+  //border-radius: 10px;
   border-style: solid;
-  border-color: black;
+  border-color: #dbc4f5;
   padding: 15px;
-  max-width: max-content;
+  width: 62vw;
   background-color: white;
 
   .Date {
     font-family: "Roboto", sans-serif;
     font-size: 25px;
+    font-style: italic;
   }
   .calender {
     height: 45px;
     width: 40px;
+  }
+  .JournalValue{
+    margin: 30px;
+    font-size: 25px;
   }
 `;
 const StyleLink = styled(Link)`

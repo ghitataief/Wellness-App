@@ -2,8 +2,9 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { BsPerson } from "react-icons/bs";
 import { BiHomeHeart } from "react-icons/bi";
+import Logout from "./login/Logout";
 
-const NavBar = () => {
+const NavBar = ({ currentUser, setCurrentUser}) => {
   return (
     <Wrap>
       <Wrapper>
@@ -24,11 +25,23 @@ const NavBar = () => {
           <StyleLink to={"/Soul"}>
             <Page>Soul</Page>
           </StyleLink>
-          <StyleLink to={"/signin"}>
+          {/* <StyleLink to={"/signin"}>
             <Page>
               <BsPerson className="Login" />
             </Page>
-          </StyleLink>
+          </StyleLink> */}
+
+          {currentUser? (
+            <StyleLink to={"/login"}>
+              <Page>
+                <Logout setCurrentUser={setCurrentUser}/>
+              </Page>
+            </StyleLink>
+          ) : <StyleLink to={"/signin"}>
+          <Page>
+            <BsPerson className="Login" />
+          </Page>
+        </StyleLink>}
         </MainPages>
       </Wrapper>
       <hr />

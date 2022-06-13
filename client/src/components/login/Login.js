@@ -1,26 +1,22 @@
 import styled from "styled-components";
 import { useState, useContext } from "react";
 import { CurrentUserContext } from "./CurrentUserContext";
-import { Redirect, useHistory } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const Login = () => {
+const LogIn = () => {
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
-  const validateForm = () => {
-    return email.length > 0 && password.length > 0;
-  };
+  //statuts
+  const [subStatus, setSubStatus] = useState("idle");
+  //Error Message
+  const [errMessage, setErrMessage] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
   };
 
-  //Login authautifaction
-  const { loginWithRedirect } = useAuth0();
 
-  //---Sign in function
 
   //Declare my state of the current User
   const [signInName, setSignInName] = useState("");
@@ -28,94 +24,102 @@ const Login = () => {
   //Establish the current user data
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
 
-  //statuts
-  const [subStatus, setSubStatus] = useState("idle");
-
-  //Error Message
-  const [errMessage, setErrMessage] = useState("");
-
   //Use history to redirect
   const history = useHistory();
 
   //On submit of the form, run this function
-   const singInForm = (e) => {
-  //   //prevent the default action of the form element
+  const logInForm = (e) => {
+    //   //prevent the default action of the form element
     e.preventDefault();
 
-  //   //fetch the data post end point
-  //   fetch("api/signin", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       status: signInName,
-  //     }),
-  //   })
-  //     .then((reponse) => {
-  //       return reponse.json();
-  //     })
-  //     .then((data) => {
-  //       //On the sign in, set the currentUser to that data
-  //       setCurrentUser(data.data);
-  //       if (data.status === 200) {
-  //         history.push("/");
-  //         //redirect to homepage
-  //       } else if (currentUser !== null) {
-  //         setSubStatus("confirmed");
-  //       } else if (currentUser === null) {
-  //         setSubStatus("error");
-  //         setErrMessage("User doesn't exist");
-  //       }
-  //     });
+    //fetch the data users
+    fetch("/api/signin",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
+        .then((reponse) => reponse.json())
+        .then((data) => {
+          //On the sign in, set the currentUser to that data
+          console.log("data login", data);
+          setCurrentUser(data.data);
+          if (data.status === 201) {
+            history.push("/");
+            //redirect to homepage
+          } else if (currentUser !== null) {
+            setSubStatus("confirmed");
+          } else if (currentUser === null) {
+            setSubStatus("error");
+            setErrMessage("User doesn't exist");
+          }
+        });
   };
 
   return (
-    <WrapSignIn>
-      <form onSubmit={singInForm}>
-        <SignUpTitle>Sign Up</SignUpTitle>
-        <div class="form-group">
-          <label for="exampleInputEmail1">Email address</label>
-          <input
-            type="email"
-            class="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-            placeholder="Enter email"
-          />
-        </div>
-        <div class="form-group">
-          <label for="exampleInputPassword1">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="exampleInputPassword1"
-            placeholder="Password"
-          />
-        </div>
-        <div class="form-group form-check">
-          <label class="form-check-label" for="exampleCheck1">
-            Agree to terms and services
-          </label>
-          <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-        </div>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          //On change of event, set Sign in Name to the value
-          onChange={(e) => {
-            setSignInName(e.target.value);
-          }}
-          onClick={() => loginWithRedirect()}
-        >
-          Submit
-        </button>
-      </form>
-    </WrapSignIn>
+    <>
+      <WrapSignIn>
+        <form onSubmit={logInForm}>
+          <SignUpTitle>Log In</SignUpTitle>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input
+              type="email"
+              class="form-control"
+              id="exampleInputEmail1"
+              aria-describedby="emailHelp"
+              placeholder="Enter email"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="exampleInputPassword1"
+              placeholder="Password"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+          </div>
+          <div class="form-group form-check">
+            <label class="form-check-label" for="exampleCheck1">
+              Agree to terms and services
+            </label>
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="exampleCheck1"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            //On change of event, set Sign in Name to the value
+            onChange={(e) => {
+              setSignInName(e.target.value);
+            }}
+            // onClick={() => loginWithRedirect()}
+          >
+            Log In
+          </button>
+        </form>
+      </WrapSignIn>
+    </>
   );
 };
 
-export default Login;
+export default LogIn;
 
 const WrapSignIn = styled.div`
   display: flex;
@@ -168,4 +172,16 @@ const WrapSignIn = styled.div`
 const SignUpTitle = styled.h1`
   font-size: 30px;
   font-family: "Roboto", sans-serif;
+  align-self: center;
+  align-content: center;
+`;
+
+const LogInTitle = styled.p`
+  font-size: 20px;
+  font-family: "Roboto", sans-serif;
+`;
+
+const StyleLink = styled(Link)`
+  text-decoration: none;
+  color: #33c0ff;
 `;

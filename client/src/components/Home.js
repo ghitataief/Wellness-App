@@ -1,18 +1,21 @@
 import styled from "styled-components";
 import Helmet from "react-helmet";
-import Login from "./login/Login";
+import SignUp from "./login/SignUp";
+import Flower from "./images/Flower.png"
+import plant_icon from "./images/plant_icon.png"
+import lavende from "./images/lavende.png"
 
 const Home = () => {
   return (
     <Wrapper>
       <Helmet bodyAttributes={{ style: "background-color : #F3EDFC" }} />
-
+      <img src={Flower} className="Flower"/>
       <Title>
-        {/* Place holder for now, need to not hard coded */}
-        <GrowthHavenIcon src="https://cdn-icons-png.flaticon.com/512/100/100662.png" />
+        <GrowthHavenIcon src={lavende} alt="Plant Icon" className="Lavende"/>
         Growth Haven
+        
       </Title>
-
+ 
       <Description>
         Discover Your True Potential, Release Your Fears & Make Your Dream Life
         a Reality <br></br>Whether it's discovering your purpose, doing what you
@@ -20,7 +23,10 @@ const Home = () => {
         fulfilling life—you can totally do it. You are the artist of your life.
         You have the power to create your dream life.
       </Description>
-      <VisionBorad>Place Holder for a Vision board</VisionBorad>
+      <img src={Flower} className="Flower"/>
+      <VisionBorad>Place Holder for a Vision board
+     
+      </VisionBorad>
       <SubDescription>
         <ul>
           <li>
@@ -39,6 +45,14 @@ export default Home;
 const Wrapper = styled.div`
   span {
     margin: 15px;
+  }
+  .Flower{
+   width: 420px;
+    position: absolute;
+    z-index: 1;
+  }
+  .Lavende{
+    width: 100px;
   }
 `;
 const Title = styled.h1`
@@ -62,9 +76,10 @@ const Description = styled.div`
   font-size: 30px;
   display: flex;
   font-family: "Poppins", sans-serif;
-  font-style: italic;
   text-align: center;
   margin: 100px 300px;
+  background-color: white;
+  padding : 30px 100px;
 `;
 const SubDescription = styled.div`
   font-size: 30px;

@@ -1,6 +1,9 @@
 "use strict";
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 const { findName } = require("./utils");
+const users = require("./data/users.json");
+// use this package to generate unique ids: https://www.npmjs.com/package/uuid
+const { v4: uuidv4 } = require("uuid");
 
 // mongodb and dotenv
 require("dotenv").config();
@@ -16,9 +19,6 @@ const options = {
 const dbName = "Growth-Haven";
 const affirmationsColl = "affirmations";
 
-//=============================================
-// **** Retrieve all items
-//=============================================
 const getAffirmations = async (req, res) => {
   try {
     // Create Mongo clients,
@@ -82,70 +82,172 @@ const getJournal = async (req, res) => {
 };
 
 const addJournal = async (req, res) => {
-  const { value } = req.body
+  //Create journal post
+  const journalPost = req.body.message;
+  console.log("req.body.message", req.body.message);
 
-  //Connect to client 
-  try{
+  const monthlyDate = req.body.month
+  console.log("monthlyDate", monthlyDate);
+  const weeklyDate = req.body.week 
+  console.log("weeklyDate ", weeklyDate );
+
+  //Connect to client
+  try {
     const client = new MongoClient(MONGO_URI, options);
     await client.connect();
     const db = client.db(dbName);
-      //Create a blog post 
-   const blog = await db.collection("blog-post").insertOne(req.body);
-     // If blog has been added to collection = success 
-  if(blog){
-    res.status(201).json({
-      status: 201,
-      message:"Success",
-      data: value
-    })
-  } else {
-    res.status(404).json({
-      status: 404,
-      message: "No input field value has been given",
-      data: value
-    });
-  }
-  }
-  catch(err){
+
+    //Only if journalPost has input that you post
+    if (journalPost.length > 0) {
+      //Create a blog post and give it an Id
+      const blog = await db
+        .collection("blog-post")
+        .insertOne({ id: uuidv4(), journalPost });
+
+      res.status(201).json({
+        status: 201,
+        message: "Success",
+        data: journalPost,
+        monthlyDate: monthlyDate,
+        weeklyDate:weeklyDate,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "No input field value has been given",
+        data: journalPost,
+      });
+    }
+  } catch (err) {
+    console.log(err);
     return res.status(500).json({
       status: 500,
-      data:req.body,
-      message:err.message
-    })
+      data: journalPost,
+      message: err.message,
+    });
   }
-}
+};
 
-const test = (req, res) => {
+//Fetch the quotes and send data to front-end
+const getQuotes = (req, res) => {
   fetch("http://zenquotes.io/api/quotes/")
     .then((res) => res.json())
     .then((data) => {
-      console.log(data)
-      res.status(200).json(data)
+      res.status(200).json(data);
     });
-
-}
-
-//Handle Sign in
-const handleSignIn = (request, response) => {
-  const signInName = request.body.status;
-
-  //return the user in the list of local users with the imported function findName : argument are local.users, and signInName that we get from body
-  const user = findName(response.locals.users, signInName);
-
-  //Establishing condition : if user in list res 200, else 404
-  user
-    ? sendResponse(response, 200, user)
-    : sendResponse(response, 404, null, "user not found");
 };
 
-//========================================================
-// Modules exports
-//========================================================
+//Handle Sign in
+const handleSignIn = async (req, res) => {
+  const { email, password } = req.body;
+
+  //Connect to the users database
+  try {
+    const client = new MongoClient(MONGO_URI, options);
+    await client.connect();
+    const db = client.db(dbName);
+
+    //Set the users into an array of object
+    const users = db.collection("users");
+    const allUsers = await users.find().toArray();
+
+    //Set flag of current user false
+    let isUserExist = false;
+
+    //Look into all users
+    allUsers.find((user) => {
+      //Return true if user email and password match
+      if (user.email === email && user.password === password) {
+        return (isUserExist = true);
+      }
+    });
+
+    //If user true return 201 else return 404
+    isUserExist
+      ? res.status(201).json({
+          status: 201,
+          message: "User exist",
+        })
+      : res.status(404).json({
+          status: 404,
+          message: "User not found",
+        });
+  } catch (err) {
+    console.log("Error:", err.stack);
+    res.status(500).json({ status: 500, message: "Error" });
+  }
+};
+
+const handleNewUser = async (req, res) => {
+  const { signInName, email, password } = req.body;
+
+  //Condition to create a user
+  if (!signInName || signInName.length < 0) {
+    return res.status(400).json({
+      status: 400,
+      message: "Please provide your full name",
+    });
+  } else if (!email || !email.includes("@")) {
+    return res.status(400).json({
+      status: 400,
+      message: "Please provide a valid email address",
+    });
+  } else if (!password || password.length < 10) {
+    return res.status(400).json({
+      status: 400,
+      message: "Please provide a valid password",
+    });
+  } else {
+    //Everything is successfull then connect to database
+    const client = new MongoClient(MONGO_URI, options);
+    await client.connect();
+    const db = client.db(dbName);
+
+    // bundle key with req.body and create new user
+    const newUser = Object.assign({ _id: uuidv4() }, req.body);
+
+    res.status(201).json({
+      status: 201,
+      message: "Success",
+      data: newUser,
+    });
+  }
+
+  // // bundle key with req.body
+  // const newUser = Object.assign({ _id: uuidv4() }, req.body);
+
+  // //Connect to client
+  // try {
+  //   const client = new MongoClient(MONGO_URI, options);
+  //   await client.connect();
+  //   const db = client.db(dbName);
+  //   //Create a user
+  //   const user = await db.collection("users").insertOne(newUser);
+
+  //   if (user) {
+  //     res.status(201).json({
+  //       status: 201,
+  //       message: "Success",
+  //       data: newUser,
+  //     });
+  //   } else {
+  //     res.status(404).json({
+  //       status: 404,
+  //       message: "No user has been added",
+  //       data: newUser,
+  //     });
+  //   }
+  // } catch (err) {
+  //   console.log("Error:", err.stack);
+  //   res.status(500).json({ status: 500, data: err, message: "Error" });
+  // }
+};
 
 module.exports = {
   getAffirmations,
   addJournal,
   handleSignIn,
-  test,
+  getQuotes,
   getJournal,
+  handleNewUser,
 };

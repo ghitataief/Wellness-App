@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import Login from "./Login";
+import SignUp from "./SignUp";
 
 
 const SignIn = () => {
 
   return (<Wrapper>
   <Title>Let's create the life of <br/>your dream</Title>
-  <Login/>
+  <SignUp/>
   </Wrapper>);
 };
 

@@ -21,23 +21,23 @@ const Journal = ({ value }) => {
       .then((res) => res.json())
       .then((data) => data.data)
       .then((result) => {
+        console.log('result',result)
         result.map((blog) => {
-          blogArray.push(blog.message);
+          blogArray.push(blog.journalPost);
         });
         setBlog(blogArray);
       });
   }, []);
-  console.log("Blog", blog);
 
   return (
     <>
     <Wrapper>
-      <Title>My diary</Title>
-      {blog?.map((message) => {
+      <Title>My Journal</Title>
+      {blog?.map((message, key) => {
         return (
           <>
             <BlogPost>
-              <div dangerouslySetInnerHTML={{ __html: message }} />
+              <div dangerouslySetInnerHTML={{ __html: message }} key ={key}/>
             </BlogPost>
           </>
         );
@@ -65,9 +65,10 @@ const Title = styled.h1`
   display: flex;
   margin-top: 20px;
   background-color: pink;
+  color: whitesmoke;
   padding: 30px;
-  width: 20vw;
-  border-radius: 10px;
+ // width: 20vw;
+  border-radius: 2px;
 `
 
 const BlogPost = styled.div`

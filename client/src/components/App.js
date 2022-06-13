@@ -13,6 +13,7 @@ import SignIn from "./login/SignIn";
 import Footer from "./Footer";
 import NavBar from "./NavBar";
 import Journal from "./directories/Journal"
+import LogIn from "./login/LogIn";
 //authotification process
 import { Auth0Provider } from "@auth0/auth0-react";
 
@@ -21,15 +22,14 @@ import { Auth0Provider } from "@auth0/auth0-react";
 const App = () => {
   const {currentUser, setCurrentUser} = useContext(CurrentUserContext); 
 
-
     return (
       <Auth0Provider
       domain="http://localhost:3000"
-      clientId="YOUR_CLIENT_ID"
+      clientId={"YOUR_CLIENT_ID"}
       redirectUri={window.location.origin}
     >
         <BrowserRouter>
-        <NavBar />
+        <NavBar currentUser= {currentUser} setCurrentUser={setCurrentUser}/>
           <Switch>
             <Route exact path="/">
               <Home />
@@ -48,6 +48,9 @@ const App = () => {
               <Soul />
             </Route>
             <Route path="/signin">{currentUser? <Redirect to="/"/> : <SignIn />}
+            </Route>
+            <Route exact path="/login">
+              <LogIn />
             </Route>
             <Route path="">
               <ErrorPage />

@@ -14,8 +14,9 @@ const {
   getAffirmations,
   addJournal,
   handleSignIn,
-  test,
+  getQuotes,
   getJournal,
+  handleNewUser,
 } = require("./handlers");
 
 //================================================
@@ -35,16 +36,19 @@ express()
   // get an affirmation
   .get("/api/get-affirmations", getAffirmations)
 
-  // @TEST @REMOVE ME
-  .get("/api/test", test)
+  // get quotes
+  .get("/api/quotes", getQuotes)
 
   // post update journal
   .post("/add-journal", addJournal)
   // get an affirmation
   .get("/api/get-journal", getJournal)
 
-  // post sign in
+
+  // Handle Sign in if user exist
   .post("/api/signin", handleSignIn)
+  // Create a user in data base 
+  .post("/api/create-user", handleNewUser)
 
   //=====================================================
   // Catch all endpoint & server port
