@@ -1,21 +1,31 @@
 import styled from "styled-components";
 import Helmet from "react-helmet";
-import SignUp from "./login/SignUp";
-import Flower from "./images/Flower.png"
-import plant_icon from "./images/plant_icon.png"
-import lavende from "./images/lavende.png"
+import SignIn from "./login/SignIn";
+import { CurrentUserContext } from "./login/CurrentUserContext";
+import { useContext } from "react";
+import peacefull from "../components/images/peacefull.png";
+import cloud from "../components/images/cloud.png";
 
 const Home = () => {
+  const { currentUser } = useContext(CurrentUserContext);
   return (
     <Wrapper>
       <Helmet bodyAttributes={{ style: "background-color : #F3EDFC" }} />
-      <img src={Flower} className="Flower"/>
-      <Title>
-        <GrowthHavenIcon src={lavende} alt="Plant Icon" className="Lavende"/>
-        Growth Haven
-        
-      </Title>
- 
+
+      <Title>Growth Haven</Title>
+      <SubDescription>
+        <ul>
+          <li>
+            - Get intentional with your daily pratices with your personal
+            journal
+          </li>
+          <br />
+          <li>- Track your physical wellness and organize your month in your calender</li>
+          <br />
+          <li>- Access to daily affirmations practices and positives quotes</li>
+        </ul>
+      </SubDescription>
+
       <Description>
         Discover Your True Potential, Release Your Fears & Make Your Dream Life
         a Reality <br></br>Whether it's discovering your purpose, doing what you
@@ -23,19 +33,7 @@ const Home = () => {
         fulfilling life—you can totally do it. You are the artist of your life.
         You have the power to create your dream life.
       </Description>
-      <img src={Flower} className="Flower"/>
-      <VisionBorad>Place Holder for a Vision board
-     
-      </VisionBorad>
-      <SubDescription>
-        <ul>
-          <li>
-            Get intentional with your daily pratices with your personal journal
-          </li>
-          <li>Track your physical wellness in your calender.</li>
-          <li>Access to daily affirmations exercises</li>
-        </ul>
-      </SubDescription>
+      {!currentUser && <SignIn />}
     </Wrapper>
   );
 };
@@ -43,21 +41,23 @@ const Home = () => {
 export default Home;
 
 const Wrapper = styled.div`
+  background-image: url(${cloud});
+
   span {
     margin: 15px;
   }
-  .Flower{
-   width: 420px;
+  .calendar {
+    width: 200px;
     position: absolute;
     z-index: 1;
   }
-  .Lavende{
+  .harmonyIcon {
     width: 100px;
   }
 `;
 const Title = styled.h1`
-  font-weight: 400;
-  font-size: 90px;
+  font-weight: 800;
+  font-size: 120px;
   display: flex;
   font-family: "Roboto", sans-serif;
   font-style: italic;
@@ -65,7 +65,11 @@ const Title = styled.h1`
   display: flex;
   align-self: center;
   align-items: center;
-  margin-top: 50px;
+  padding: 110px;
+  letter-spacing: 1rem;
+  color: black;
+  //box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  text-shadow: 7px 6px 1px white;
 
   img {
     margin-right: 10px;
@@ -79,7 +83,12 @@ const Description = styled.div`
   text-align: center;
   margin: 100px 300px;
   background-color: white;
-  padding : 30px 100px;
+  padding: 100px 100px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  li {
+    text-shadow: 7px 6px 1px white;
+  }
 `;
 const SubDescription = styled.div`
   font-size: 30px;
@@ -87,22 +96,13 @@ const SubDescription = styled.div`
   font-family: "Poppins", sans-serif;
   justify-content: center;
   margin: 10px;
+
   ul {
     background-color: #f9eedf;
-    padding: 60px;
+    padding: 100px;
+    border-radius: 3px;
+    list-style: none;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+      rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   }
-`;
-
-const GrowthHavenIcon = styled.img`
-  width: 80px;
-`;
-const VisionBorad = styled.div`
-  background-color: #E5E2E7 ;
-  color: white;
-  padding: 250px;
-  margin: 60px 300px;
-  font-family: "Tiro Gurmukhi", serif;
-  font-size: 50px;
-  text-align: center;
-  border-radius: 30px;
 `;

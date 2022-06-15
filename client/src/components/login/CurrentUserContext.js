@@ -4,18 +4,17 @@ import useLocalStorage from "./useLocalStorage";
 export const CurrentUserContext = createContext();
 
 const CurrentUserProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useLocalStorage(null, "CurrentUser");
 
-
-  //For the Login, we need to establish the current user data with UseContext
-  const [currentUser, setCurrentUser] = useLocalStorage(
-    null,
-    "CurrentUser"
-  );
+  //replace user event
+  const replaceUserEvent = (events) => {
+    setCurrentUser({ ...currentUser, events: events });
+  };
 
   return (
     <>
       <CurrentUserContext.Provider
-        value={{ currentUser, setCurrentUser}}
+        value={{ currentUser, setCurrentUser, replaceUserEvent }}
       >
         {children}
       </CurrentUserContext.Provider>

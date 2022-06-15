@@ -1,11 +1,9 @@
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 
-
 const Footer = () => {
   return (
     <Wrapper>
-
       <PolConf>
         <NavLink
           to="/"
@@ -15,9 +13,8 @@ const Footer = () => {
             textAlign: "center",
           }}
         >
-          <p>&copy; © 2021 Growth Haven, Inc. All rights reserved </p>
+          <p>&copy; © 2022 Growth Haven, Inc. All rights reserved </p>
         </NavLink>
-        
       </PolConf>
     </Wrapper>
   );
@@ -29,8 +26,6 @@ const Wrapper = styled.div`
   max-width: 100vw;
   background-color: white;
 `;
-
-
 
 const PolConf = styled.div`
   height: 25px;

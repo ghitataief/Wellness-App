@@ -1,47 +1,45 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { BsPerson } from "react-icons/bs";
-import { BiHomeHeart } from "react-icons/bi";
 import Logout from "./login/Logout";
+import harmony from "./images/harmony.jpg";
 
-const NavBar = ({ currentUser, setCurrentUser}) => {
+const NavBar = ({ currentUser, setCurrentUser }) => {
   return (
     <Wrap>
       <Wrapper>
         <HomeIcon>
-          <BiHomeHeart className="homeIcon" />
           <StyleLink to={"/"}>
-            <Page>Home</Page>
+            <img src={harmony} className="homeIcon" />
           </StyleLink>
         </HomeIcon>
 
         <MainPages>
-          <StyleLink to={"/Mind"}>
-            <Page>Mind</Page>
-          </StyleLink>
-          <StyleLink to={"/Body"}>
-            <Page>Body</Page>
-          </StyleLink>
-          <StyleLink to={"/Soul"}>
-            <Page>Soul</Page>
-          </StyleLink>
-          {/* <StyleLink to={"/signin"}>
-            <Page>
-              <BsPerson className="Login" />
-            </Page>
-          </StyleLink> */}
+          {currentUser ? (
+            <>
+              <StyleLink to={"/Mind"}>
+                <Page>Mind</Page>
+              </StyleLink>
+              <StyleLink to={"/Body"}>
+                <Page>Body</Page>
+              </StyleLink>
+              <StyleLink to={"/Soul"}>
+                <Page>Soul</Page>
+              </StyleLink>
 
-          {currentUser? (
-            <StyleLink to={"/login"}>
+              <StyleLink to={"/login"}>
+                <Page>
+                  <Logout setCurrentUser={setCurrentUser} />
+                </Page>
+              </StyleLink>
+            </>
+          ) : (
+            <StyleLink to={"/signin"}>
               <Page>
-                <Logout setCurrentUser={setCurrentUser}/>
+                <BsPerson className="Login" />
               </Page>
             </StyleLink>
-          ) : <StyleLink to={"/signin"}>
-          <Page>
-            <BsPerson className="Login" />
-          </Page>
-        </StyleLink>}
+          )}
         </MainPages>
       </Wrapper>
       <hr />
@@ -71,8 +69,7 @@ const Wrap = styled.div`
   }
 
   .homeIcon {
-    width: 50px;
-    height: 40px;
+    width: 80px;
     align-self: center;
   }
 `;

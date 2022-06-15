@@ -1,4 +1,3 @@
-// Import librairies
 import React from "react";
 import { AiOutlineFrown } from "react-icons/ai";
 import styled from "styled-components";

@@ -1,7 +1,5 @@
 "use strict";
 const fetch = require("node-fetch");
-const { findName } = require("./utils");
-const users = require("./data/users.json");
 // use this package to generate unique ids: https://www.npmjs.com/package/uuid
 const { v4: uuidv4 } = require("uuid");
 
@@ -67,7 +65,7 @@ const getJournal = async (req, res) => {
     // close the connection to the database server
     client.close();
 
-    // if there is no items respond with 404
+    // if there is no blog post respond with 404
     if (journal.length > 0) {
       return res.status(200).json({ status: 200, data: journal });
     } else {
@@ -84,12 +82,12 @@ const getJournal = async (req, res) => {
 const addJournal = async (req, res) => {
   //Create journal post
   const journalPost = req.body.message;
-  console.log("req.body.message", req.body.message);
 
-  const monthlyDate = req.body.month
-  console.log("monthlyDate", monthlyDate);
-  const weeklyDate = req.body.week 
-  console.log("weeklyDate ", weeklyDate );
+  const email = req.body.email;
+
+  const monthlyDate = req.body.month;
+
+  const weeklyDate = req.body.week;
 
   //Connect to client
   try {
@@ -99,17 +97,22 @@ const addJournal = async (req, res) => {
 
     //Only if journalPost has input that you post
     if (journalPost.length > 0) {
-      //Create a blog post and give it an Id
-      const blog = await db
-        .collection("blog-post")
-        .insertOne({ id: uuidv4(), journalPost });
+      //Create a blog post and give it an Id, set the date
+      const blog = await db.collection("blog-post").insertOne({
+        id: uuidv4(),
+        journalPost,
+        monthlyDate,
+        weeklyDate,
+        email,
+      });
 
       res.status(201).json({
         status: 201,
         message: "Success",
         data: journalPost,
         monthlyDate: monthlyDate,
-        weeklyDate:weeklyDate,
+        weeklyDate: weeklyDate,
+        email: email,
       });
     } else {
       res.status(404).json({
@@ -155,7 +158,7 @@ const handleSignIn = async (req, res) => {
     let isUserExist = false;
 
     //Look into all users
-    allUsers.find((user) => {
+    const user = allUsers.find((user) => {
       //Return true if user email and password match
       if (user.email === email && user.password === password) {
         return (isUserExist = true);
@@ -166,6 +169,7 @@ const handleSignIn = async (req, res) => {
     isUserExist
       ? res.status(201).json({
           status: 201,
+          data: user,
           message: "User exist",
         })
       : res.status(404).json({
@@ -198,13 +202,16 @@ const handleNewUser = async (req, res) => {
       message: "Please provide a valid password",
     });
   } else {
+    // bundle key with req.body and create new user + calendar data
+    const newUser = Object.assign({ _id: uuidv4() }, req.body, { events: [] });
     //Everything is successfull then connect to database
     const client = new MongoClient(MONGO_URI, options);
     await client.connect();
     const db = client.db(dbName);
 
-    // bundle key with req.body and create new user
-    const newUser = Object.assign({ _id: uuidv4() }, req.body);
+    await db.collection("users").insertOne(newUser);
+
+    console.log("new user", newUser);
 
     res.status(201).json({
       status: 201,
@@ -212,35 +219,45 @@ const handleNewUser = async (req, res) => {
       data: newUser,
     });
   }
+};
 
-  // // bundle key with req.body
-  // const newUser = Object.assign({ _id: uuidv4() }, req.body);
+const addEvent = async (req, res) => {
+  //Request event from body
+  const event = req.body.allEvents;
 
-  // //Connect to client
-  // try {
-  //   const client = new MongoClient(MONGO_URI, options);
-  //   await client.connect();
-  //   const db = client.db(dbName);
-  //   //Create a user
-  //   const user = await db.collection("users").insertOne(newUser);
+  //Request Id
+  const Id = req.body.id;
 
-  //   if (user) {
-  //     res.status(201).json({
-  //       status: 201,
-  //       message: "Success",
-  //       data: newUser,
-  //     });
-  //   } else {
-  //     res.status(404).json({
-  //       status: 404,
-  //       message: "No user has been added",
-  //       data: newUser,
-  //     });
-  //   }
-  // } catch (err) {
-  //   console.log("Error:", err.stack);
-  //   res.status(500).json({ status: 500, data: err, message: "Error" });
-  // }
+  //Connect to client
+  try {
+    const client = new MongoClient(MONGO_URI, options);
+    await client.connect();
+    const db = client.db(dbName);
+
+    if (event) {
+      //Update the events array of the current user
+      const eventsArray = await db
+        .collection("users")
+        .updateOne({ _id: Id }, { $set: { events: event } });
+
+      res.status(201).json({
+        status: 201,
+        message: "Success",
+        data: event,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "No event found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      status: 500,
+      message: err.message,
+    });
+  }
 };
 
 module.exports = {
@@ -250,4 +267,5 @@ module.exports = {
   getQuotes,
   getJournal,
   handleNewUser,
+  addEvent,
 };

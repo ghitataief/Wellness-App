@@ -3,6 +3,7 @@ import { useState, useContext } from "react";
 import { CurrentUserContext } from "./CurrentUserContext";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
+import ErrorMsg from "./ErrorMsg";
 
 const LogIn = () => {
   const [email, setEmail] = useState("");
@@ -15,8 +16,6 @@ const LogIn = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
   };
-
-
 
   //Declare my state of the current User
   const [signInName, setSignInName] = useState("");
@@ -33,89 +32,80 @@ const LogIn = () => {
     e.preventDefault();
 
     //fetch the data users
-    fetch("/api/signin",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+    fetch("/api/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    })
+      .then((reponse) => reponse.json())
+      .then((data) => {
+        setCurrentUser(data.data);
+        if (data.status === 201) {
+          history.push("/");
+        } else if (currentUser !== null) {
+          setSubStatus("confirmed");
+        }
+        if (data.status === 404) {
+          setSubStatus("Error");
+          setErrMessage("User doesn't exist");
+        }
       })
-        .then((reponse) => reponse.json())
-        .then((data) => {
-          //On the sign in, set the currentUser to that data
-          console.log("data login", data);
-          setCurrentUser(data.data);
-          if (data.status === 201) {
-            history.push("/");
-            //redirect to homepage
-          } else if (currentUser !== null) {
-            setSubStatus("confirmed");
-          } else if (currentUser === null) {
-            setSubStatus("error");
-            setErrMessage("User doesn't exist");
-          }
-        });
+      .catch((err) => console.log(err));
   };
 
   return (
-    <>
-      <WrapSignIn>
-        <form onSubmit={logInForm}>
-          <SignUpTitle>Log In</SignUpTitle>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input
-              type="email"
-              class="form-control"
-              id="exampleInputEmail1"
-              aria-describedby="emailHelp"
-              placeholder="Enter email"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              id="exampleInputPassword1"
-              placeholder="Password"
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </div>
-          <div class="form-group form-check">
-            <label class="form-check-label" for="exampleCheck1">
-              Agree to terms and services
-            </label>
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="exampleCheck1"
-            />
-          </div>
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-            //On change of event, set Sign in Name to the value
+    <WrapSignIn>
+      <form onSubmit={logInForm}>
+        <SignUpTitle>Log In</SignUpTitle>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Email address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="exampleInputEmail1"
+            aria-describedby="emailHelp"
+            placeholder="Enter email"
             onChange={(e) => {
-              setSignInName(e.target.value);
+              setEmail(e.target.value);
             }}
-            // onClick={() => loginWithRedirect()}
-          >
-            Log In
-          </button>
-        </form>
-      </WrapSignIn>
-    </>
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="exampleInputPassword1"
+            placeholder="Password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
+        </div>
+        <div class="form-group form-check">
+          <label class="form-check-label" for="exampleCheck1">
+            Agree to terms and services
+          </label>
+          <input type="checkbox" class="form-check-input" id="exampleCheck1" />
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          onChange={(e) => {
+            setSignInName(e.target.value);
+          }}
+        >
+          Log In
+        </button>
+      </form>
+      {subStatus === "Error" && <ErrorMsg>{errMessage}</ErrorMsg>}
+    </WrapSignIn>
   );
 };
 
@@ -123,7 +113,9 @@ export default LogIn;
 
 const WrapSignIn = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   background-color: whitesmoke;
 
   label {
@@ -152,6 +144,14 @@ const WrapSignIn = styled.div`
     flex-direction: column;
   }
 
+  form {
+    padding: 80px;
+    border-radius: 3px;
+    margin: 80px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+
   button {
     font-size: 30px;
     font-family: "Roboto", sans-serif;
@@ -174,14 +174,4 @@ const SignUpTitle = styled.h1`
   font-family: "Roboto", sans-serif;
   align-self: center;
   align-content: center;
-`;
-
-const LogInTitle = styled.p`
-  font-size: 20px;
-  font-family: "Roboto", sans-serif;
-`;
-
-const StyleLink = styled(Link)`
-  text-decoration: none;
-  color: #33c0ff;
 `;

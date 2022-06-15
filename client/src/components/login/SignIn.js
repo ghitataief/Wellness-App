@@ -14,7 +14,7 @@ export default SignIn;
 
 const Wrapper = styled.div`
 margin: 100px 300px;
-//background-color: red;
+background-color: white;
 border-color: #FEE4CC;
 border-style: solid;
 border-width: 4px;

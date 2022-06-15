@@ -2,30 +2,20 @@ import styled from "styled-components";
 import { useState, useContext } from "react";
 import { CurrentUserContext } from "./CurrentUserContext";
 import { useHistory } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
-import ErrorMsg from './ErrorMsg'
+import ErrorMsg from "./ErrorMsg";
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-
-  const [password, setPassword] = useState("");
-
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  };
-
-  //Login authautifaction
-  const { loginWithRedirect } = useAuth0();
-
-  //---Sign in function
+  //Establish the current user data
+  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
 
   //Declare my state of the current User
   const [signInName, setSignInName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  //Establish the current user data
-  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  //Establish the data of the current User : calender event
+  const [myCalendar, setMyCalendar] = useState([]);
 
   //statuts
   const [subStatus, setSubStatus] = useState("idle");
@@ -37,15 +27,9 @@ const SignUp = () => {
   const history = useHistory();
 
   //On submit of the form, run this function
-   const singInForm = (e) => {
-  //   //prevent the default action of the form element
+  const singInForm = (e) => {
+    //   //prevent the default action of the form element
     e.preventDefault();
-
-
-    //Handle error message
-    const handleChange = (value, name) => {
-      setErrMessage("");
-    };
 
     //fetch the data post end point
     fetch("/api/create-user", {
@@ -62,45 +46,27 @@ const SignUp = () => {
       .then((reponse) => reponse.json())
       .then((data) => {
         //On the sign in, set the currentUser to that data
-        console.log("data SignUp ", data) 
+        if (data.status === 400) {
+          setSubStatus("Error");
+          setErrMessage(data.message);
+        }
 
-        if (data.status === 400){
-          setSubStatus("Error")
-          setErrMessage(data.message)
-          console.log("data.message", data.message)
-        } 
-        
-        if (data.status === 201 ){
-          setCurrentUser(data.data)
-          setSubStatus("confirmed")
+        if (data.status === 201) {
+          setCurrentUser(data.data);
+          setSubStatus("confirmed");
           history.push("/");
         }
-        
-        // setCurrentUser(data.data);
-        // if (data.status === 201) {
-        //   history.push("/");
-        //   //redirect to homepage
-        // } else if (data.Error === 'Please provide a valid password') {
-        //   console.log('change password')
-        //   setSubStatus("confirmed");
-        // } 
-        // else if (currentUser !== null) {
-        //   setSubStatus("confirmed");
-        // } else if (currentUser === null) {
-        //   setSubStatus("error");
-        //   setErrMessage("User doesn't exist");
-        // }
       });
   };
-
 
   return (
     <WrapSignIn>
       <form onSubmit={singInForm}>
         <SignUpTitle>Sign up</SignUpTitle>
-        <LogInTitle>Already a member ? <StyleLink to={"/login"}>Log In</StyleLink></LogInTitle>
+        <LogInTitle>
+          Already a member ? <StyleLink to={"/login"}>Log In</StyleLink>
+        </LogInTitle>
         <div class="form-group">
-          
           <label for="exampleInputEmail1">Name</label>
           <input
             type="text"
@@ -111,11 +77,9 @@ const SignUp = () => {
             onChange={(e) => {
               setSignInName(e.target.value);
             }}
-
           />
         </div>
         <div class="form-group">
-          
           <label for="exampleInputEmail1">Email address</label>
           <input
             type="email"
@@ -147,15 +111,11 @@ const SignUp = () => {
           <input type="checkbox" class="form-check-input" id="exampleCheck1" />
         </div>
 
-        <button
-          type="submit"
-          class="btn btn-primary"
-        // onClick={() => loginWithRedirect()}
-        >
+        <button type="submit" class="btn btn-primary">
           Sign Up
         </button>
       </form>
-      {subStatus ==="Error" && <ErrorMsg>{errMessage}</ErrorMsg>}
+      {subStatus === "Error" && <ErrorMsg>{errMessage}</ErrorMsg>}
     </WrapSignIn>
   );
 };
@@ -168,6 +128,14 @@ const WrapSignIn = styled.div`
   background-color: whitesmoke;
   flex-direction: column;
   align-items: center;
+
+  form {
+    padding: 80px;
+    border-radius: 3px;
+    margin: 80px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
 
   label {
     font-size: 30px;

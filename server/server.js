@@ -17,6 +17,7 @@ const {
   getQuotes,
   getJournal,
   handleNewUser,
+  addEvent,
 } = require("./handlers");
 
 //================================================
@@ -49,6 +50,10 @@ express()
   .post("/api/signin", handleSignIn)
   // Create a user in data base 
   .post("/api/create-user", handleNewUser)
+
+
+  //Add calendar event into data 
+  .post("/api/add-event", addEvent)
 
   //=====================================================
   // Catch all endpoint & server port

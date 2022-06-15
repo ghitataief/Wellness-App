@@ -1,15 +1,9 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import "react-quill/dist/quill.snow.css";
-import Moment from "react-moment";
-import { FcOvertime } from "react-icons/fc";
-import { Link } from "react-router-dom";
 
-//Get data from blog post
-
-const Journal = ({ value }) => {
+const Journal = ({ monthDate, weeklyDate, currentUser }) => {
   const [blog, setBlog] = useState([]);
-
   const blogArray = [];
 
   useEffect(() => {
@@ -21,28 +15,36 @@ const Journal = ({ value }) => {
       .then((res) => res.json())
       .then((data) => data.data)
       .then((result) => {
-        console.log('result',result)
-        result.map((blog) => {
-          blogArray.push(blog.journalPost);
+        //Find current current user email that match post email
+        result.find((post) => {
+          if (post.email === currentUser.email) {
+            //Push every post into the BlogArray of the current user
+            blogArray.push(post.journalPost);
+          }
         });
         setBlog(blogArray);
-      });
+      })
+      .catch((err) => console.log(err))
   }, []);
 
   return (
     <>
-    <Wrapper>
-      <Title>My Journal</Title>
-      {blog?.map((message, key) => {
-        return (
-          <>
-            <BlogPost>
-              <div dangerouslySetInnerHTML={{ __html: message }} key ={key}/>
-            </BlogPost>
-          </>
-        );
-      })}
-    </Wrapper>
+      <Wrapper>
+        <Title>My Journal</Title>
+        {blog?.map((message, key) => {
+          return (
+            <BlogWrap>
+              <TimeStamp>
+                {monthDate}
+                <p>{weeklyDate}</p>
+              </TimeStamp>
+              <BlogPost>
+                <div dangerouslySetInnerHTML={{ __html: message }} key={key} />
+              </BlogPost>
+            </BlogWrap>
+          );
+        })}
+      </Wrapper>
     </>
   );
 };
@@ -54,7 +56,6 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-
 `;
 const Title = styled.h1`
   font-weight: bold;
@@ -67,20 +68,35 @@ const Title = styled.h1`
   background-color: pink;
   color: whitesmoke;
   padding: 30px;
- // width: 20vw;
   border-radius: 2px;
-`
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+`;
 
 const BlogPost = styled.div`
-display: flex;
-justify-content: center;
-background-color: aliceblue;
-border-width: 3px;
-border-style: solid;
-margin: 20px;
-border-radius: 20px;
-padding: 35px;
-width: max-content;
-align-self: center;
+  display: flex;
+  justify-content: left;
+  background-color: #ffdeef;
+  border-width: 3px;
+  border-style: solid;
+  border-color: #ffcae5;
+  margin: 20px;
+  padding: 35px;
+  width: 70vw;
+  align-self: center;
+  font-family: "Roboto", sans-serif;
 
-`
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+`;
+const TimeStamp = styled.div`
+  align-self: center;
+  padding: 30px;
+  background-color: #fdabbe;
+  margin-top: 15px;
+  font-family: "Tiro Gurmukhi", serif;
+`;
+
+const BlogWrap = styled.div`
+  display: flex;
+`;
